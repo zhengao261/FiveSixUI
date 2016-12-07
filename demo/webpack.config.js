@@ -13,7 +13,7 @@ module.exports = {
     resolve: {
         extensions: ['', '.js', '.jsx', '.css', '.json'],
         alias: {
-            "comp": path.join(__dirname, '../components')
+            "fivesix": path.join(__dirname, '../components')
         }
     },
     resolveLoader: { root: path.join(__dirname, "../node_modules") },
