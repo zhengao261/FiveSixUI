@@ -2,7 +2,7 @@
  * @file 复合组件，图片查看器，可放大、缩小、顺时针和逆时针旋转
  *       modified by lichun<lichun@iwaimai.baidu.com> 修改为使用包裹子元素的方式，修改旋转主体；
  * @author lihuan <lihuan@iwaimai.baidu.com>
- * @version 0.0.1
+ * @version 0.1.0
  */
 import React, { PropTypes } from 'react';
 import { Modal, Button, Checkbox, message } from 'antd';
@@ -13,12 +13,12 @@ import './styles.less';
  * 
  * @property {string} src 图片跳转链接
  * @property {bool} show 是否显示组件， default = false
- * @property {func} onClose 关闭查看器组件事件【无参】
+ * @property {func} onClose 关闭查看器组件事件后钩子，会传入图片src值
+ * @property {func} onOpen 打开查看器组件事件后钩子，会传入图片src值
  */
 const propTypes = {
     src: PropTypes.string,
     show: PropTypes.bool,
-    width: PropTypes.number,
     onClose: PropTypes.func,
     onOpen: PropTypes.func
 };
@@ -118,14 +118,14 @@ export default class ImageModal extends React.Component {
         this.setState({
             show: false
         })
-        onClose && onClose();
+        onClose && onClose(this.props.src);
     }
 
     handleOpen(onOpen) {
         this.setState({
             show: true
         })
-        onOpen && onOpen();
+        onOpen && onOpen(this.props.src);
     }
 
     render() {
