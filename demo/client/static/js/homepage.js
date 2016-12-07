@@ -9,8 +9,14 @@ export default class Homepage extends Component {
                 />
                 <ImageModal 
                     src = 'http://yizhan.baidu.com/static/logisticsfrontend/images/sound_d165ad8.png'
-                    show = { true }
-                />
+                >
+                    <img src="http://yizhan.baidu.com/static/logisticsfrontend/images/sound_d165ad8.png" />
+                </ImageModal>
+                <ImageModal 
+                    src = 'http://yizhan.baidu.com/static/logisticsfrontend/images/download_195f873.png'
+                >
+                    点我点我
+                </ImageModal>
             </div>
         )
         

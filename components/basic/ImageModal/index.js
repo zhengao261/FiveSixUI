@@ -8,8 +8,6 @@ import React, { PropTypes } from 'react';
 import { Modal, Button, Checkbox, message } from 'antd';
 import './styles.less';
 
-const ButtonGroup = Button.Group;
-
 /**
  * 组件属性申明
  * 
@@ -20,11 +18,13 @@ const ButtonGroup = Button.Group;
 const propTypes = {
     src: PropTypes.string,
     show: PropTypes.bool,
-    onClose: PropTypes.func
+    width: PropTypes.number,
+    onClose: PropTypes.func,
+    onOpen: PropTypes.func
 };
-const DEFAULT_WIDTH = 300;
-const MAX_WIDTH = 1000;
 
+const ButtonGroup = Button.Group;
+const DEFAULT_WIDTH = 300, MAX_WIDTH = 1000, ZOOM_FACTOR = 0.2;
 /**
  * 主组件
  * 
@@ -44,24 +44,9 @@ export default class ImageModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            show: false,
             width: DEFAULT_WIDTH,
             deg: 0
-        }
-    }
-
-    /**
-     * 组件接收到新的 props 时调用，恢复state初始值
-     * 
-     * @param {any} nextProps 接收到的新的props
-     * 
-     * @memberOf ImageModal
-     */
-    componentWillReceiveProps(nextProps){
-        if(!nextProps.show && this.props.show){
-            this.setState({
-                width: DEFAULT_WIDTH,
-                deg: 0
-            })
         }
     }
 
@@ -84,7 +69,7 @@ export default class ImageModal extends React.Component {
             return;
         } else {
             this.setState({
-                width: width * 0.8
+                width: width * (1 - ZOOM_FACTOR)
             });
         }
     }
@@ -100,7 +85,7 @@ export default class ImageModal extends React.Component {
             return;
         } else {
             this.setState({
-                width: width * 1.2
+                width: width * (1 + ZOOM_FACTOR)
             });
         }
     }
@@ -131,14 +116,14 @@ export default class ImageModal extends React.Component {
 
     handleClose(onClose) {
         this.setState({
-            show: true
+            show: false
         })
         onClose && onClose();
     }
 
     handleOpen(onOpen) {
         this.setState({
-            show: false
+            show: true
         })
         onOpen && onOpen();
     }
@@ -150,18 +135,18 @@ export default class ImageModal extends React.Component {
         return  (
             <div className="wl-imagemodal-wrapper">
                 <div
+                    className = "wl-imagemodal-con"
                     onClick = {() => this.handleOpen(onOpen)}
                 >
                     { this.props.children }
                 </div>
                 { show ? (
                     <Modal visible={ show || false } onCancel={ () => this.handleClose(onClose) }
-                        wrapClassName="wl-imagemodal-show"
                         footer={ null }
                         width={ width+32 }
                     >
                         
-                        <div className="wl-imagemodal-divImg" style={ { width } }>
+                        <div style={ { width } }>
                             <img 
                                 src={ src } 
                                 style={{
@@ -175,10 +160,10 @@ export default class ImageModal extends React.Component {
                 { show ? (
                     <div style={{ position: 'fixed', left: 100, top: 70, zIndex: 9999}}>
                         <ButtonGroup style={{left: '50%', marginLeft: -110}}>
-                            <Button className="wl-imagemodal-btnOperate" onClick={ () => this.zoominImg() } >缩小</Button>
-                            <Button className="wl-imagemodal-btnOperate" onClick={ () => this.zoomoutImg() } >放大</Button>
-                            <Button className="wl-imagemodal-btnOperate" onClick={ () => this.counterclockImg() } >逆时针</Button>
-                            <Button className="wl-imagemodal-btnOperate" onClick={ () => this.clockwiseImg()} >顺时针</Button>
+                            <Button onClick={ () => this.zoominImg() } >缩小</Button>
+                            <Button onClick={ () => this.zoomoutImg() } >放大</Button>
+                            <Button onClick={ () => this.counterclockImg() } >逆时针</Button>
+                            <Button onClick={ () => this.clockwiseImg()} >顺时针</Button>
                         </ButtonGroup>
                     </div>
                 ) : ''}
