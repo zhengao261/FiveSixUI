@@ -9,13 +9,16 @@
 import React, { PropTypes } from 'react';
 import moment from 'moment';
 import { Form, Input, Select, Button, Radio, DatePicker, notification } from 'antd';
-import { getRangeValByType, transferDate } from './utils';
+import utils from './utils';
 import { DEFAULT_DATE_FORMAT, DEFAULT_OPTIONS, DATE_TYPE, DEFAULT_MAX_INTERVAL, PARAMS_MAP } from './constant';
 import './styles.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const RangePicker = DatePicker.RangePicker;
+
+const getRangeValByType = utils.getRangeValByType;
+const transferDate =  utils.transferDate;
 
 /**
  * 组件属性申明
@@ -149,7 +152,7 @@ export default class SearchPeriod extends React.Component {
     render() {
         const { isCustomize, rangeVal, removedDates } = this.state;
         const { options, defaultType, dateFormat, onChange, removeDateTool, disabledDate, allowRangeClear, disabled } = this.props;
-        
+        console.log(rangeVal);
         return (
             <div>
                 { options.length === 1 && options[0] === 'customize' ? '' :

@@ -1,5 +1,5 @@
 import React, { Component, PropTypes} from 'react';
-import { Crumb, ImageModal } from 'fivesix';
+import { Crumb, ImageModal, SearchPeriod } from 'fivesix';
 export default class Homepage extends Component { 
     render() {
         return (
@@ -17,6 +17,7 @@ export default class Homepage extends Component {
                 >
                     点我点我
                 </ImageModal>
+                <SearchPeriod/>
             </div>
         )
         
