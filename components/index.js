@@ -5,7 +5,6 @@ export { default as Crumb } from './basic/Crumb';
 export { default as ImageModal } from './basic/ImageModal';
 export { default as MultiConsequentInputGroup } from './basic/MultiConsequentInputGroup';
 // export { default as MultiTimePeriod } from './basic/MultiTimePeriod';
-// export { default as Pagination } from './basic/Pagination';
 export { default as SearchPeriod } from './basic/SearchPeriod';
 export { default as Select } from './basic/Select';
 export { default as Show } from './basic/Show';

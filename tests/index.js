@@ -3,6 +3,8 @@ import chaiEnzyme from 'chai-enzyme';
 import chaiJsx from 'chai-jsx';
 import { jsdom } from 'jsdom';
 
+process.env.NODE_ENV='test';
+
 // 加入支持JSX和Enzyme的断言库
 chai.use(chaiEnzyme());
 chai.use(chaiJsx);
