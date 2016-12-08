@@ -8,7 +8,7 @@ export { default as MultiConsequentInputGroup } from './basic/MultiConsequentInp
 // export { default as Pagination } from './basic/Pagination';
 export { default as SearchPeriod } from './basic/SearchPeriod';
 export { default as Select } from './basic/Select';
-// export { default as Show } from './basic/Show';
+export { default as Show } from './basic/Show';
 // export { default as ShowAge } from './basic/ShowAge';
 // export { default as Summernote } from './basic/Summernote';
 export { default as Tag } from './basic/Tag';

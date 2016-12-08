@@ -12,12 +12,14 @@ import './styles.less';
 /**
  * 组件属性申明
  *
- * @property {bool} isShow 是否显示
- * @property {bool} delay 是否延迟，默认不延迟（延迟时，当isShow为false时会消除该dom）
+ * @property {bool} isShow 是否显示，默认值为true
+ * @property {bool} isDelay 是否延迟，默认false
+ * @property {bool} isInline 是否是行内元素，默认为false
  */
 const propTypes = {
-      isShow: PropTypes.bool.isRequired,
-      delay: PropTypes.bool,
+      isShow: PropTypes.bool,
+      isDelay: PropTypes.bool,
+      isInline: PropTypes.bool
 }
 
 /**
@@ -29,7 +31,9 @@ const propTypes = {
  */
 export default class Show extends React.Component {
     static defaultProps = {
-        delay: false
+        isShow: true,
+        isDelay: false,
+        isInline: false
     };
 
     constructor(props) {
@@ -37,7 +41,7 @@ export default class Show extends React.Component {
     }
 
     render() {
-        const { isShow, delay } = this.props;
+        const { isShow, isDelay, isInline } = this.props;
 
         /**
 	     * delay逻辑判断说明
@@ -48,10 +52,10 @@ export default class Show extends React.Component {
 	     
         return (
         	<div 
-        		style = {{ display: delay || isShow ? 'block' : 'none' }} 
+        		style = {{ display: isShow === false ? 'none' : ( isInline ? 'inline-block' : 'block' ) }} 
     			className = 'wl-show-animated wl-show-slideInUp'
     		>
-	            { !delay || isShow ? this.props.children : null }
+	            { (isDelay && isShow === false) ? '' : this.props.children }
 	        </div>
 	    );
     }

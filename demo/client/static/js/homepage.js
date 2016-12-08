@@ -1,5 +1,7 @@
 import React, { Component, PropTypes} from 'react';
-import { Crumb, ImageModal, SearchPeriod } from 'fivesix';
+import { Crumb, ImageModal, SearchPeriod, Show } from 'fivesix';
+import { Button } from 'antd';
+
 export default class Homepage extends Component { 
     render() {
         return (
@@ -18,6 +20,15 @@ export default class Homepage extends Component {
                     点我点我
                 </ImageModal>
                 <SearchPeriod/>
+                <Show
+                    isShow = { false }
+                    isInline = { true }
+                    isDelay = { false }
+                >
+                    <Button>测试</Button>
+                </Show>
+                    <Button>测试</Button>
+                
             </div>
         )
         
