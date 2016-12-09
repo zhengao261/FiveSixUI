@@ -81,7 +81,6 @@ export default class BankSelect extends React.Component {
 
     render() {
         const {form, name, disabled} = this.props;
-        const getPopupContainer = this.props.getPopupContainer || () => document.body;
         const otherProps = _.omit(this.props, [
             'form',
             'name',
@@ -93,7 +92,6 @@ export default class BankSelect extends React.Component {
         })(
             <Select
                 disabled={disabled}
-                getPopupContainer={getPopupContainer}
                 {...otherProps}
             >
                 {this._getOptions()}

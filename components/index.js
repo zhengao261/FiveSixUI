@@ -3,7 +3,7 @@
 export { default as Crumb } from './basic/Crumb';
 // export { default as DataTable } from './basic/DataTable';
 export { default as ImageModal } from './basic/ImageModal';
-export { default as MultiConsequentInputGroup } from './basic/MultiConsequentInputGroup';
+// export { default as MultiConsequentInputGroup } from './basic/MultiConsequentInputGroup';
 // export { default as MultiTimePeriod } from './basic/MultiTimePeriod';
 export { default as SearchPeriod } from './basic/SearchPeriod';
 export { default as Select } from './basic/Select';
@@ -14,7 +14,7 @@ export { default as Tag } from './basic/Tag';
 export { default as TagsField } from './basic/TagsField';
 export { default as TenDaysSelect } from './basic/TenDaysSelect';
 export { default as TimeRangePicker } from './basic/TimeRangePicker';
-// export { default as UploadImage } from './basic/UploadImage';
+export { default as UploadImage } from './basic/UploadImage';
 
 // export { default as AoiMap } from './business/AoiMap';
 // // export { default as AreaSelect } from './business/AreaSelect';
