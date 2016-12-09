@@ -7,23 +7,26 @@
  * 
  */
 import React, { PropTypes } from 'react';
+import { TimePicker } from 'antd';
+import moment from 'moment';
 import './styles.less';
-import { TimePicker } from 'antd'
 
 /**
  * 组件属性申明
- * @property {bool} start 开始时间
- * @property {bool} end 结束时间
- * @property {bool} disabled 时间段是否可编辑
- * @property {function} onDelete 删除时间段 ［无参］
+ * @property {array} value 起止时间 {strat:Moment, end:Moment}
+ * @property {string} separator 起止时间间隔号，默认为'至'
  * @property {function} onChange 时间change事件 ［一个参数，为object］
+ * @property {bool} 是否是按序的 默认为true
+ * @property {object} startConfig antd TimePicker的扩展属性支持
+ * @property {object} endConfig antd TimePicker的扩展属性支持
  */
 const propTypes = {
-    start: PropTypes.moment,
-    end: PropTypes.moment,
-    disabled: PropTypes.bool,
-    onDelete: PropTypes.func,
+    value: PropTypes.array,
+    separator:PropTypes.string,
     onChange: PropTypes.func,
+    ordered: PropTypes.bool,
+    startConfig: PropTypes.object,
+    endConfig: PropTypes.object
 }
 
 /**
@@ -43,179 +46,87 @@ export default class TimeRangePicker extends React.Component {
      */
 	constructor(props) {
 		super(props);
-		this.state = {
-            start:{
-            	time:'',
-            },
-            end:{
-            	time:'',
-            }
+	}
+    handleChange(type, value) {
+        const { onChange } = this.props;
+        onChange && onChange({
+            start: this.start,
+            end: this.end,
+            [type]: value
+        })
+    }
+    disabledHours(min, max) {
+        const hours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+        if (min) {
+            let minHour = min.hour();
+            return hours.splice(0, minHour);
         }
-	}
-
-    /**
-     * 返回从 start 到 end 这一段连续的数据组成的数组 pure
-     * 
-     * @param {Number} start 起始数据
-     * @param {Number} end 结束数据
-     * @return {Array} result 时间段数组
-     * 
-     * @memberOf TimeRangePicker
-     */
-	newArray(start, end) {
-	  let result = [];
-	  for (let i = start; i < end; i++) {
-	    result.push(i);
-	  }
-	  return result;
-	}
-    
-    /**
-     * 起始时间发生变化事件（改变 state,设置 state.start.time 为改变后的时间）
-     * 
-     * @param {moment} date，选择的 date
-     * @param {string} dateString，选择的 string 类型的 date（03:02）
-     * 
-     * @memberOf TimeRangePicker
-     */
-	onStartChange(date, dateString) {
-        this.setState({
-        	start:{
-        		...this.state.start,
-        		time: dateString
-        	}
-        })
-        this.onChange(dateString, this.state.end.time)
+        if (max) {
+            let maxHour = max.hour();
+            return hours.splice(maxHour + 1);
+        }
+        return [];
     }
 
-    /**
-     * 结束时间发生变化事件（改变 state,设置 state.end.time 为改变后的时间）
-     * 
-     * @param {moment} date，选择的 date
-     * @param {string} dateString，选择的 string 类型的 date
-     * 
-     * @memberOf TimeRangePicker
-     */
-    onEndChange(date, dateString) {
-		this.setState({
-        	end:{
-        		...this.state.end,
-        		time:dateString
-        	}
-        })
-        this.onChange(this.state.start.time, dateString)
+    disabledMinutes(hour, min, max) {
+        const minutes = Array.from({length:60}, (v, k) => k);
+        if (min) {
+            let minHour = min.hour();
+            let minMinute = min.minute();
+            return minHour == hour ? minutes.splice(0, minMinute) : [];
+        }
+        if (max) {
+            let maxHour = max.hour();
+            let maxMinute = max.minute();
+            return maxHour == hour ? minutes.splice(maxMinute + 1) : [];
+        }
+        return [];
     }
 
-    /**
-     * 为组件传入的 change action 传当前时间段
-     * 
-     * @param {string} start，change 事件后的起始时间
-     * @param {string} end，change 事件后的结束时间
-     * 
-     * @memberOf TimeRangePicker
-     */
-    onChange(start,end){
-        this.props.onChange && this.props.onChange({start,end})
-    }
-    
-    /**
-     * 禁止用户选择某个起始时间段中的 hours 时间段（结束时间 endTime 的 hours 之后禁用）pure
-     * 
-     * @param {String} endTime 已选择时间的 结束时间
-     * @return {Array}，禁用的 hours 时间段数组
-     * 
-     * @memberOf TimeRangePicker
-     */
-    disabledStartHours(endTime) {
-    	let hours = endTime && Number(endTime.split(':')[0])
-		return hours ? this.newArray(hours + 1, 24) : [];
-	}
-
-    /**
-     * 禁止用户选择某个起始时间段中的已选择 hour 的 minutes 时间段（结束时间 endTime 的 minutes 之后禁用）pure
-     * 
-     * @param {Number} h 已选择时间的 hour
-     * @param {String} endTime 已选择时间的 结束时间
-     * @return {Array} 禁用的 minutes 时间段数组
-     * 
-     * @memberOf TimeRangePicker
-     */
-	disabledStartMinutes(h, endTime) {
-    	let hours = endTime && Number(endTime.split(':')[0])
-    	let minutes = endTime && Number(endTime.split(':')[1])
-		return hours == h ? this.newArray(minutes, 60) : [];
-	}
-
-    /**
-     * 禁止用户选择某个结束时间段中的 hours 时间段（起始时间 startTime 的 hours 之前禁用）pure 
-     * 
-     * @param {String} startTime 已选择时间的 起始时间
-     * @return {Array} 禁用的hours时间段数组
-     * 
-     * @memberOf TimeRangePicker
-     */
-	disabledEndHours(startTime) {
-    	let hours = startTime && Number(startTime.split(':')[0])
-		return this.newArray(0, hours);
-	}
-
-    /**
-     * 禁止用户选择 某个结束时间段中的已选择 hour 的 minutes 时间段（起始时间 startTime 的 minutes 之前禁用）pure 
-     * 
-     * @param {String} startTime 已选择时间的 起始时间
-     * @param {Number} h，已选择时间的 hour
-     * @return {Array} 禁用的 hours 时间段数组
-     * 
-     * @memberOf TimeRangePicker
-     */
-	disabledEndMinutes(h, startTime) {
-    	let hours = startTime && Number(startTime.split(':')[0])
-    	let minutes = startTime && Number(startTime.split(':')[1])
-		return hours == h ? this.newArray(0,minutes + 1) : [];
-	}
-
-    /**
-     * 组件加载后，改变 state 为用户设置的初始时间段
-     * 
-     * @memberOf TimeRangePicker
-     */
-    componentDidMount(){
-        this.setState({
-            start:{
-                time:this.props.start
-            },
-            end:{
-                time:this.props.end
-            }
-        })
+    disabledSeconds(hour, minute, min, max) {
+        const second = Array.from({length:60}, (v, k) => k);
+        if (min) {
+            let minHour = min.hour();
+            let minMinute = min.minute();
+            let minSecond = min.second();
+            return (minHour == hour && minMinute == minute) ? second.splice(0, minSecond) : [];
+        }
+        if (max) {
+            let maxHour = max.hour();
+            let maxMinute = max.minute();
+            let maxSecond = max.second();
+            return (maxHour == hour && maxMinute == minute) ? second.splice(0, maxSecond) : [];
+        }
+        return [];
     }
     
 	render() {
-        const { disabled ,start, end} = this.props
-        
-		return  <div className='wl-timerangepicker-wrapper'>
-					<TimePicker 
-                        className = "wl-timerangepicker-start-time"
-                        disabled = {disabled}
-                        value = {start || moment(date.getTime())}
-						disabledHours={this.disabledStartHours.bind(this, this.state.end.time)} 
-						disabledMinutes={(selectedHour) => this.disabledStartMinutes(selectedHour, this.state.end.time)}
-						onChange={this.onStartChange.bind(this)} 
-						format="HH:mm" />
-						 {' '}至{' '}
-					<TimePicker 
-                        className = "wl-timerangepicker-end-time"
-                        disabled = {disabled}
-                        value = {end || moment(date.getTime())}
-						disabledHours={this.disabledEndHours.bind(this, this.state.start.time)}
-						disabledMinutes={(selectedHour) => this.disabledEndMinutes(selectedHour, this.state.start.time)}
-						onChange={this.onEndChange.bind(this)} 
-						format="HH:mm" />
-                    {
-                        this.props.onDelete ? 
-                            <button type="button" disabled = {disabled} onClick={this.props.onDelete} class="btn btn-danger">删除</button> :
-                            null
-                    }
-				</div>
+        const { value, separator, startConfig, endConfig } = this.props
+        this.start = value ? value.start : moment();
+        this.end = value ? value.end : moment();
+
+		return  (
+            <div className='wl-timerangepicker-wrapper'>
+                <TimePicker 
+                    className = "wl-timerangepicker-start-time"
+                    disabledHours = { () => this.disabledHours(null, this.end) }
+                    disabledMinutes = { (hour) => this.disabledMinutes(hour, null, this.end)}
+                    disabledSeconds = { (hour, minute) => this.disabledSeconds(hour, minute, null, this.end)}
+                    value = { this.start }
+                    onChange = { (start) => this.handleChange('start', start) }
+                    { ...startConfig }
+                    />
+                    { separator || ' 至 ' }
+                <TimePicker 
+                    className = "wl-timerangepicker-end-time"
+                    value = { this.end }
+                    disabledHours = { () => this.disabledHours(this.start) }
+                    disabledMinutes = { (hour) => this.disabledMinutes(hour, this.start)}
+                    disabledSeconds = { (hour, minute) => this.disabledSeconds(hour, minute, this.start)}
+                    onChange = { (end) => this.handleChange('end', end) }
+                    { ...endConfig }
+                    />
+            </div>
+        )
 	}
 }

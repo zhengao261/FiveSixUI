@@ -1,11 +1,11 @@
 import React, { Component, PropTypes} from 'react';
-import { Crumb, ImageModal, SearchPeriod, Show } from 'fivesix';
+import { Crumb, ImageModal, SearchPeriod, Show, TimeRangePicker } from 'fivesix';
 import { Button } from 'antd';
 
 export default class Homepage extends Component { 
     render() {
         return (
-            <div>
+            <div style={{height: 800}}>
                 <Crumb
                     data = {[{title: '骑士管理', link: 'www.baidu.com'},{title: '装备管理'}]}
                 />
@@ -27,8 +27,10 @@ export default class Homepage extends Component {
                 >
                     <Button>测试</Button>
                 </Show>
-                    <Button>测试</Button>
-                
+                <Button>测试</Button>
+                <div style={{position: 'absolute', left: '50'}}>
+                    <TimeRangePicker />
+                </div>
             </div>
         )
         

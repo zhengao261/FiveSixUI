@@ -13,7 +13,7 @@ export { default as Show } from './basic/Show';
 export { default as Tag } from './basic/Tag';
 export { default as TagsField } from './basic/TagsField';
 export { default as TenDaysSelect } from './basic/TenDaysSelect';
-// export { default as TimeRangePicker } from './basic/TimeRangePicker';
+export { default as TimeRangePicker } from './basic/TimeRangePicker';
 // export { default as UploadImage } from './basic/UploadImage';
 
 // export { default as AoiMap } from './business/AoiMap';
