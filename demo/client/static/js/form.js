@@ -25,7 +25,7 @@ class TestForm extends Component {
                         initialValue: {start: moment().startOf('day'), end: moment()}
                     })(
                       <TimeRangePicker
-                        ordered = { true }
+                        ordered = { false }
                       />
                     )}
                 </FormItem>
