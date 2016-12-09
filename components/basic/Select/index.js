@@ -2,18 +2,16 @@
 * @file Select
 * @author 谢天
 * @version 0.0.1
-* @todo 兼容value类型
-*       更合理的异常捕获
+* @todo 更合理的异常捕获
 *       函数提纯
+*       lazy
 */
-import React, {Component, PropTypes} from 'react';
-import comp from './Components';
+import React, { Component, PropTypes } from 'react';
+import { DropdownMenu, OptGroup, Option, SearchInput, SelectInput, Tips } from './Components';
 import _ from 'lodash';
-import $ from 'jquery';
-import {findDOMNode} from 'react-dom';
+import { findDOMNode } from 'react-dom';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-
-const {DropdownMenu, OptGroup, Option, SearchInput, SelectInput, Tips} = comp
+import lazyCache from 'react-lazy-cache';
 /**
  * 组件属性申明
  *
@@ -43,7 +41,7 @@ const {DropdownMenu, OptGroup, Option, SearchInput, SelectInput, Tips} = comp
  *                                   - @param {string} ANY
  *                                   - @return {(string|array)} 先返回'ANY'，然后返回任意一个value
  *                                   - @param {string} ANTIALL
- *                                   - @return {(string|array)} 返回'ANTIALL' 仅全选会被勾选，不同于ALL，该字面量是为了有些情况下，初始化想要全选，但是value值为空
+ *                                   - @return {(string|array)} 返回'ANTIALL' 全选，不同于ALL，该字面量是为了有些情况下，初始化想要全选，但是value值为空
  *                                 - 字面量会引起组件的re-render，字面量依然会在第一次被父组件获取到，因此，一定要加以判断
  *                                 - 字面量是反模式，尽量不要使用
  * @property {function} onChange - 可控模式，必须提供，返回用户操作带来的value变化，是否允许该变化由父组件决定
@@ -121,32 +119,37 @@ class Select extends Component {
          * 点击事件，返回此次点击带来的value变化 impure
          */
         this.handleClick = (e) => {
+            let value = this.filterLiteral(this.props.value, this.props.multiple, this.props.data);
             if (this.props.multiple) {
                 let ret = [];
                 if (e.value !== 'ALL') {
-                    if (_.includes(this.props.value, e.value)) {
-                        ret = _.pull(_.clone(this.props.value), e.value);
+                    if (_.includes(value, e.value)) {
+                        ret = _.pull(_.clone(value), e.value);
                     } else {
-                        ret = _.clone(this.props.value === 'ANTIALL' ? [] : this.props.value);
+                        ret = _.clone(value);
                         ret.push(e.value);
                     }
                 } else {
-                    ret = this.getAllValue(this.props.data);
-                    if (ret.length === this.props.value.length || this.props.value === 'ANTIALL') {
+                    ret = this.cache.ALL;
+                    if (ret.length === value.length) {
                         ret = [];
                     }
                 }
                 this.props.onChange && this.props.onChange(ret);
             } else {
+                $(document.body).off('click.multiselect');
+                this.setState({
+                    openMenu: false
+                });
                 if (e.value !== 'ALL') {
-                    if (this.props.value !== e.value) {
+                    if (value !== e.value) {
                         this.props.onChange && this.props.onChange(e.value);
                     } else {
                         this.props.onChange && this.props.onChange('');
                     }
                 } else {
-                    if (this.props.value !== e.value) {
-                        this.props.onChange && this.props.onChange(this.getAllValue(this.props.data).join(','));
+                    if (value !== e.value) {
+                        this.props.onChange && this.props.onChange(this.cache.ALL.join(','));
                     } else {
                         this.props.onChange && this.props.onChange('');
                     }
@@ -179,11 +182,11 @@ class Select extends Component {
          */
         this.ifSelectAll = (data, value, multiple) => {
             let ret = [];
-            ret = this.getAllValue(data);
+            ret = this.cache.ALL;
             if (multiple) {
-                return value.length === ret.length || value === 'ANTIALL';
+                return value.length === ret.length;
             }
-            return value.indexOf(',') !== -1 && value.split(',').length === ret.length || value === 'ANTIALL';
+            return value.indexOf(',') !== -1 && value.split(',').length === ret.length;
         };
         /**
          * 根据value取对应text pure
@@ -194,8 +197,8 @@ class Select extends Component {
         this.mapValueToText = (data, value) => {
             if (data.length > 0 && data[0].children) {
                 let ret = [];
-                data.map(
-                  (item) => ret = ret.concat(item.children)
+                data.forEach(
+                    item => ret = ret.concat(item.children)
                 );
                 return ret[_.findIndex(ret, (v) => v.value === value)] ? ret[_.findIndex(ret, (v) => v.value === value)].text : '';
             }
@@ -210,21 +213,21 @@ class Select extends Component {
             let ret = [];
             if (data.length > 0 && data[0].children) {
                 data.map(
-                  (item) => {
-                      item.children.map(
-                          (itm) => {
-                              this.props.multiple && itm.text.indexOf(this.state.search) !== -1 && ret.push(itm.value);
-                              !this.props.multiple && ret.push(itm.value);
-                          }
-                      );
-                  }
+                    (item) => {
+                        item.children.map(
+                            (itm) => {
+                                this.props.multiple && itm.text.indexOf(this.state.search) !== -1 && ret.push(itm.value);
+                                !this.props.multiple && ret.push(itm.value);
+                            }
+                        );
+                    }
                 );
             } else {
                 data.map(
-                (item) => {
-                    this.props.multiple && item.text.indexOf(this.state.search) !== -1 && ret.push(item.value);
-                    !this.props.multiple && ret.push(item.value);
-                }
+                    (item) => {
+                        this.props.multiple && item.text.indexOf(this.state.search) !== -1 && ret.push(item.value);
+                        !this.props.multiple && ret.push(item.value);
+                    }
                 );
             }
             return ret;
@@ -252,7 +255,7 @@ class Select extends Component {
             return data[data.length - 1] ? data[data.length - 1].value : '';
         };
         /**
-         * 获取任意一个value pure
+         * 获取任意一个value pure - 因为有cache，所以本质上还是pure
          * @param {array} data
          * @return {string} 任意一个value
          */
@@ -274,93 +277,101 @@ class Select extends Component {
          * @return {(string|object)} 实际显示结果
          */
         this.transValueForInput = (data, value, width, showAll, multiple) => {
+            let newValue = this.filterLiteral(value, multiple, data);
             try {
-                if (_.isArray(value)) {
+                if (_.isArray(newValue)) {
                     let ret = [];
-                    value.map(
+                    newValue.map(
                         (item) => {
                             ret.push(this.mapValueToText(data, item));
                         }
                     );
-                    let str = value.length > 0 ? '【' + ret.join('】【') + '】' : '';
-                    str = this.ifSelectAll(data, value, multiple) && showAll ? '全部' : this.initValue(str, width);
+                    let str = newValue.length > 0 ? '【' + ret.join('】【') + '】' : '';
+                    str = this.ifSelectAll(data, newValue, multiple) && showAll ? '全部' : this.initValue(str, width);
                     return str;
                 }
-                return this.ifSelectAll(data, value, multiple) && showAll ? '全部' : this.mapValueToText(data, value);
+                return this.ifSelectAll(data, newValue, multiple) && showAll ? '全部' : this.mapValueToText(data, newValue);
             } catch (e) {
                 return '';
             }
         };
-         /**
-         * 获取需要的Options pure
-         * @param {array} data
-         * @param {(string|string[])} value
-         * @param {bool} showAll
-         * @param {bool} showSearch
-         * @param {bool} multiple
-         * @return {array} Options
-         */
-        this.getOptions = (data, value, showAll, showSearch, multiple) => {
+        /**
+        * 获取需要的Options pure
+        * @param {array} data
+        * @param {(string|string[])} value
+        * @param {bool} showAll
+        * @param {bool} showSearch
+        * @param {bool} multiple
+        * @return {array} Options
+        */
+        this.getOptions = (data, value, showAll, showSearch, multiple, search) => {
+            let newValue = this.filterLiteral(value, multiple, data);
             let ret = [];
+            let total = 0;
             if (!_.isArray(data)) {
                 throw new Error('Unable to get options from props data, please check the render of Select');
             }
             showSearch && ret.push(
               <SearchInput
                 width={this.props.width}
-                style={{left: 0, top: 32}}
+                style={{ left: 0, top: 32 }}
                 onChange={this.handleChange}
-                value={this.state.search}
+                value={search}
                 key="searchinput"
               />);
+            total++;
             showAll && data.length !== 1 && ret.push(<Option
               key={'ALL'}
               value={'ALL'}
               label={'全部'}
-              selected={this.ifSelectAll(data, value, multiple)}
+              selected={this.ifSelectAll(data, newValue, multiple)}
               onClick={this.handleClick}
                                                      />);
-            showAll && data.length !== 1 && !multiple && this.state.search !== '' && ret.pop();
+            total++;
+            showAll && data.length !== 1 && !multiple && search !== '' && ret.pop() && total--;
             if (data.length > 0 && data[0].children) {
                 data.map(
                     (item, index) => {
                         let mid = [];
+                        total++;
                         item.children.map(
-                            (itm, inx) => itm.text.indexOf(this.state.search) !== -1 && mid.push(
+                            (itm, inx) => total++ && itm.text.indexOf(search) !== -1 && mid.push(
                               <Option
                                 key={item.label + '' + inx}
                                 value={itm.value}
                                 label={itm.text}
-                                selected={_.isArray(value) ? _.includes(value, itm.value) : value === itm.value}
+                                selected={_.isArray(newValue) ? _.includes(newValue, itm.value) : newValue === itm.value}
                                 disabled={itm.disabled}
                                 onClick={this.handleClick}
                                 onMouseEnter={this.handleMouseEnter}
                                 onMouseLeave={this.handleMouseLeave}
+                                lazyload={total > 10}
                               />
-                             )
+                            )
                         );
                         ret.push(
                           <OptGroup label={item.text} key={index}>
-                             {mid}
+                                {mid}
                           </OptGroup>
-                    );
+                        );
                     }
                 );
             } else {
                 data.map(
-                    (item, index) => item.text.indexOf(this.state.search) !== -1 && ret.push(
+                    (item, index) => total++ && item.text.indexOf(search) !== -1 && ret.push(
                       <Option
                         key={index}
                         value={item.value}
                         label={item.text}
-                        selected={_.isArray(value) ? _.includes(value, item.value) : value === item.value}
+                        selected={_.isArray(newValue) ? _.includes(newValue, item.value) : newValue === item.value}
                         disabled={item.disabled}
                         onClick={this.handleClick}
                         onMouseEnter={this.handleMouseEnter}
                         onMouseLeave={this.handleMouseLeave}
+                        lazyload={total > 10}
                       />
                     )
-            );
+                );
             }
             return ret;
         };
@@ -385,7 +396,7 @@ class Select extends Component {
          */
         this.initValue = (value, maxWidth) => {
             if (this.computeFontWidth(value) > (isNaN(maxWidth) ? maxWidth.replace('px', '') / 1 - 25 : maxWidth - 25)) {
-                return <p>{'已选择 '}<b style={{color: '#87CEFA'}}>{value.split('】【').length}</b>{' 项'}</p>;
+                return <p>{'已选择 '}<b style={{ color: '#87CEFA' }}>{value.split('】【').length}</b>{' 项'}</p>;
             }
             return value;
         };
@@ -411,36 +422,100 @@ class Select extends Component {
          * 重复渲染控制
          */
         this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+        /**
+         * 强制onChange，字面量对应值返回
+         * @param {object} props
+         */
+        this.reChange = (props) => {
+            switch (props.value) {
+                case 'ALL':
+                    props.onChange && props.onChange(props.multiple ? this.cache.ALL : this.cache.ALL.join(','));
+                    break;
+                case 'FIRST':
+                    props.onChange && props.onChange(props.multiple ? [this.cache.FIRST] : this.cache.FIRST);
+                    break;
+                case 'LAST':
+                    props.onChange && props.onChange(props.multiple ? [this.cache.LAST] : this.cache.LAST);
+                    break;
+                case 'ANY':
+                    props.onChange && props.onChange(props.multiple ? [this.cache.ANY] : this.cache.ANY);
+                    break;
+                default:
+                    break;
+            }
+        };
+        /**
+         * 过滤字面量
+         * @param {(string|array)} value
+         * @param {bool} multiple
+         * @param {array} data
+         * @return {(stirng|array)} value
+         */
+        this.filterLiteral = (value, multiple, data) => {
+            if (value === 'ANTIALL') {
+                return multiple ? this.cache.ALL : this.cache.ALL.join(',');
+            }
+            if (multiple && !_.isArray(value)) {
+                try {
+                    return _.toArray(value);
+                } catch (error) {
+                    throw new Error('value should be type of Array');
+                }
+            }
+            if (!multiple && !_.isString(value)) {
+                try {
+                    return _.toString(value);
+                } catch (error) {
+                    throw new Error('value should be type of String');
+                }
+            }
+            return value;
+        };
+    }
+    componentWillMount() {
+        this.cache = lazyCache(this, {
+            SelectInput: {
+                params: ['data', 'value', 'width', 'showAll', 'multiple'],
+                fn: this.transValueForInput
+            },
+            FIRST: {
+                params: ['data'],
+                fn: this.getFirstValue
+            },
+            ALL: {
+                params: ['data'],
+                fn: this.getAllValue
+            },
+            LAST: {
+                params: ['data'],
+                fn: this.getLastValue
+            },
+            ANY: {
+                params: ['data'],
+                fn: this.getRandomValue
+            }
+        });
+    }
+    componentWillReceiveProps(nextProps) {
+        this.cache.componentWillReceiveProps(nextProps);
     }
     componentDidMount() {
-        switch (this.props.value) {
-            case 'ALL':
-                this.props.onChange && this.props.onChange(this.props.multiple ? this.getAllValue(this.props.data) : this.getAllValue(this.props.data).join(','));
-                break;
-            case 'FIRST':
-                this.props.onChange && this.props.onChange(this.props.multiple ? [this.getFirstValue(this.props.data)] : this.getFirstValue(this.props.data));
-                break;
-            case 'LAST':
-                this.props.onChange && this.props.onChange(this.props.multiple ? [this.getLastValue(this.props.data)] : this.getLastValue(this.props.data));
-                break;
-            case 'ANY':
-                this.props.onChange && this.props.onChange(this.props.multiple ? [this.getRandomValue(this.props.data)] : this.getRandomValue(this.props.data));
-                break;
-            default:
-                break;
-        }
+        this.reChange(this.props);
+    }
+    componentDidUpdate() {
+        this.reChange(this.props);
     }
     render() {
         return (
-          <div style={{display: 'inline-block'}}>
-            <div style={{position: 'relative', ...this.props.style}}>
+          <div style={{ display: 'inline-block' }}>
+            <div style={{ position: 'relative', ...this.props.style}}>
               <SelectInput
                 width={this.props.width}
                 disabled={this.props.disabled}
                 open={this.state.openMenu}
                 onClick={this.handleOpenMenu}
                 handleClear={this.props.allowClear ? this.handleClear : false}
-                value={this.transValueForInput(this.props.data, this.props.value, this.props.width, this.props.showAll, this.props.multiple)}
+                value={this.cache.SelectInput}
               />
               <DropdownMenu
                 open={this.state.openMenu}
@@ -448,15 +523,15 @@ class Select extends Component {
                 showAll={this.props.showAll && this.props.multiple}
                 showSearch={this.props.showSearch}
               >
-                {this.getOptions(this.props.data, this.props.value, this.props.showAll, this.props.showSearch, this.props.multiple)}
+                {this.getOptions(this.props.data, this.props.value, this.props.showAll, this.props.showSearch, this.props.multiple, this.state.search)}
               </DropdownMenu>
-              <Tips text={this.state.tipsText} show={this.state.tipsShow} style={this.state.tipsStyle}/>
+              <Tips text={this.state.tipsText} show={this.state.tipsShow} style={this.state.tipsStyle} />
             </div>
             <div
-              style={{top: '0px', visibility: 'hidden', fontSize: '12px', display: 'block', position: 'absolute'}}
+              style={{ top: '0px', visibility: 'hidden', fontSize: '12px', display: 'block', position: 'absolute' }}
               className="computeFontWidth"
             />
-          </div>
+          </div >
         );
     }
 }

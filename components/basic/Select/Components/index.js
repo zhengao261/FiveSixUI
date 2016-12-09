@@ -1,16 +1,6 @@
-import SelectInput from './SelectInput';
-import SearchInput from './SearchInput';
-import DropdownMenu from './DropdownMenu';
-import OptGroup from './OptGroup';
-import Option from './Option';
-import Tips from './Tips';
-
-const comp = {
-    SelectInput: SelectInput,
-    SearchInput: SearchInput,
-    DropdownMenu: DropdownMenu,
-    Option: Option,
-    OptGroup: OptGroup,
-    Tips: Tips
-};
-export default comp;
+export { default as SelectInput} from './SelectInput';
+export { default as SearchInput} from './SearchInput';
+export { default as DropdownMenu} from './DropdownMenu';
+export { default as OptGroup} from './OptGroup';
+export { default as Option} from './Option';
+export { default as Tips} from './Tips';

@@ -58,6 +58,9 @@ class DropdownMenu extends Component {
             this.initClassName = false;
         }
     }
+    componentDidUpdate() {
+        this.initClassName = ' wl-select-dropdown-hidden';
+    }
     render() {
         return (
           <div

@@ -5,6 +5,8 @@
 */
 import React, {Component, PropTypes} from 'react';
 import '../styles.less';
+import LazyLoad from 'react-lazy-load';
+
 /**
  * 组件属性申明
  *
@@ -19,7 +21,8 @@ const propTypes = {
     value: PropTypes.string.isRequired,
     selected: PropTypes.bool,
     onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func
+    onMouseLeave: PropTypes.func,
+    lazyload: PropTypes.bool
 };
 /**
  * 展示组件
@@ -64,7 +67,11 @@ class Option extends Component {
             }
         };
     }
-    render() {
+    /**
+     * get方法
+     * @return {element} <li>
+     */
+    get getLi() {
         return <li
           onClick={this.handleClick}
           onMouseEnter={this.handleMouseEnter}
@@ -78,6 +85,9 @@ class Option extends Component {
                >
             {this.props.label}
         </li>;
+    }
+    render() {
+        return this.props.lazyload ? <LazyLoad offsetVertical={32} throttle={0}>{this.getLi}</LazyLoad> : this.getLi;
     }
 }
 
