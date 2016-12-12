@@ -13,7 +13,7 @@ const propTypes = {
 }
 
 /**
- * 里程计价组件
+ * 连续区间输入组件
  */
 export default class MultiConsequentInputGroup extends React.Component {
   constructor(props) {
@@ -21,6 +21,6 @@ export default class MultiConsequentInputGroup extends React.Component {
   }
   propTypes: propTypes
   render() {
-    return 
+    return （）
   }
 }
