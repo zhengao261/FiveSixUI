@@ -4,7 +4,8 @@
 * @version 0.0.1
 */
 import React, {Component, PropTypes} from 'react';
-import Select from 'comp/Select';
+import { Select } from 'fivesix';
+
 /**
  * 组件属性申明
  *
