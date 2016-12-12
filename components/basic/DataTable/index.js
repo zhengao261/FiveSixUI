@@ -65,8 +65,8 @@ export default class DataTable extends React.Component {
             loading: true,
             data: this.getData(data),
             sortedInfo: {
-                order: '',
-                columnKey: ''
+                order: this.props.initSortedInfo ? this.props.initSortedInfo.order : '',
+                columnKey: this.props.initSortedInfo ? this.props.initSortedInfo.columnKey : ''
             }
         };
         this.initWidth = (e) => {
@@ -74,7 +74,7 @@ export default class DataTable extends React.Component {
             e.map(
             (item) => {
                 if (item.width) {
-                    initWidth += item.width;                    
+                    initWidth += item.width;
                 } else {
                     initWidth += 100;
                 }
@@ -84,10 +84,10 @@ export default class DataTable extends React.Component {
         };
     }
     getInitConfig(config) {
-        if (config.pagination && config.pagination.paging && config.pagination.serverSide === false) {// 客户端分页
+        if (config.pagination && config.pagination.paging && config.pagination.serverSide === false) { // 客户端分页
             return _.defaultsDeep(
                 { ...config,
-                total: config.data.length
+                    total: config.data.length
                 },
         { ...this.defaultConfig });
         }
@@ -111,12 +111,12 @@ export default class DataTable extends React.Component {
             (col) => {
                 let newcol = {...col};
                 if (this.initConfig.align) {
-                    newcol = {...newcol, ...col, 
+                    newcol = {...newcol, ...col,
                         className: 'column'
                     };
                 }
                 if (col.sort && !col.sorter) {
-                    newcol = {...newcol, ...col, 
+                    newcol = {...newcol, ...col,
                         sorter: (a, b) => {
                             let newA;
                             let newB;
@@ -124,55 +124,55 @@ export default class DataTable extends React.Component {
                             newB = b[col.dataIndex] != col.fix ? b[col.dataIndex] : this.state.sortedInfo.order == 'descend' ? -100000 : 100000;
                             return newA - newB;
                         },
-                        sortOrder: this.state.sortedInfo.columnKey === col.key && this.state.sortedInfo.order
+                        sortOrder: this.state.sortedInfo.columnKey === col.key ? this.state.sortedInfo.order : false
                     };
                 }
                 if (typeof col.title !== 'object') {
                     if (col.tips && col.sort) {
-                        newcol = {...newcol, ...col, 
+                        newcol = {...newcol, ...col,
                             title:
                             <div
-                                style={{ display: 'inline' }}
-                                >
+                              style={{ display: 'inline' }}
+                            >
                                 <b
-                                    data-id={col.key}
-                                    data-type="order"
-                                    style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
-                                    >
+                                  data-id={col.key}
+                                  data-type="order"
+                                  style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
+                                >
                                     {col.title}
                                 </b>
-                                <Dropdown overlay={this.showTips(col.tips) }>
+                                <Dropdown overlay={this.showTips(col.tips)}>
                                     <a className="ant-dropdown-link" href="javascript:void(0)" style={{ marginLeft: '6px', color: '#ff2b4d', cursor: 'help' }}>
                                         <Icon
-                                            type="question-circle-o"
-                                            />
+                                          type="question-circle-o"
+                                        />
                                     </a>
                                 </Dropdown>
                             </div>
                         };
                     } else if (!col.tips && col.sort) {
-                        newcol = {...newcol, ...col, 
+                        newcol = {...newcol, ...col,
                             title:
                             <b
-                                data-id={col.key}
-                                data-type="order"
-                                style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
-                                >
+                              data-id={col.key}
+                              data-type="order"
+                              style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
+                            >
                                 {col.title}
                             </b>
                         };
                     } else if (col.tips && !col.sort) {
-                        newcol = {...newcol, ...col, 
+                        newcol = {...newcol, ...col,
                             title:
                             <div
-                                style={{ display: 'inline' }}
-                                >
+                              style={{ display: 'inline' }}
+                            >
                                 {col.title}
-                                <Dropdown overlay={this.showTips(col.tips) }>
+                                <Dropdown overlay={this.showTips(col.tips)}>
                                     <a className="ant-dropdown-link" href="javascript:void(0)" style={{ cursor: 'help', color: '#ff2b4d', marginLeft: '6px' }}>
                                         <Icon
-                                            type="question-circle-o"
-                                            />
+                                          type="question-circle-o"
+                                        />
                                     </a>
                                 </Dropdown>
                             </div>
@@ -329,25 +329,25 @@ export default class DataTable extends React.Component {
         return (
             <div className="datatable-module" style={{height: this.initConfig.height === 'auto' ? 'auto' : height.table}}>
                 <Table
-                    ref={(c) => {
-                        this.table = c;
-                    } }
-                    rowSelection = {rowSelection}
-                    size="middle"
-                    loading={storeLoading ? storeLoading : loading}
-                    columns = {this.getInitColumns(columns)}
-                    dataSource = {data}
-                    rowKey = {record => record[id]}
-                    scroll = { this.initConfig.height === 'auto' ? { x: this.initWidth(columns)} : { x: this.initWidth(columns), y: height.scroll}}
-                    expandedRowRender = { expandedRowRender ? expandedRowRender : false}
-                    pagination = {pagination.paging ? {
-                        total: pagination.serverSide && data.length > pagination.pageSize ? Math.round((data.length - pagination.pageSize) * total / pagination.pageSize + total) : total,
-                        current: current,
-                        onChange: (page) => this.changePage(page),
-                        showTotal: () => `共 ${total} 条`,
-                        pageSize: pagination.serverSide && data.length > pagination.pageSize ? data.length : pagination.pageSize
-                    } : false}
-                    />
+                  ref={(c) => {
+                      this.table = c;
+                  }}
+                  rowSelection={rowSelection}
+                  size="middle"
+                  loading={storeLoading ? storeLoading : loading}
+                  columns={this.getInitColumns(columns)}
+                  dataSource={data}
+                  rowKey={record => record[id]}
+                  scroll={this.initConfig.height === 'auto' ? { x: this.initWidth(columns)} : { x: this.initWidth(columns), y: height.scroll}}
+                  expandedRowRender={expandedRowRender ? expandedRowRender : false}
+                  pagination={pagination.paging ? {
+                      total: pagination.serverSide && data.length > pagination.pageSize ? Math.round((data.length - pagination.pageSize) * total / pagination.pageSize + total) : total,
+                      current: current,
+                      onChange: (page) => this.changePage(page),
+                      showTotal: () => `共 ${total} 条`,
+                      pageSize: pagination.serverSide && data.length > pagination.pageSize ? data.length : pagination.pageSize
+                  } : false}
+                />
             </div>
         );
     }

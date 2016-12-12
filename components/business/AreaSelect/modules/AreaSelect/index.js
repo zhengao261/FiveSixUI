@@ -2,6 +2,7 @@
 * @file AreaSelect 所属区域选择组件
 * @author 谢天
 * @version 0.0.1
+* @todo antd form问题，尤其是初始化的时候
 */
 import React, {Component, PropTypes} from 'react';
 import Aoi from '../../components/Aoi';
@@ -133,7 +134,13 @@ class AreaSelect extends Component {
 AreaSelect.propTypes = propTypes;
 
 AreaSelect.defaultProps = {
-    type: 'forward'
+    type: 'forward',
+    value: {
+        team: '',
+        city: '',
+        aoi: '',
+        partner: ''
+    }
 };
 
 export default AreaSelect;
