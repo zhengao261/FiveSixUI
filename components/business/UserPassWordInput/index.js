@@ -8,8 +8,10 @@
  */
 import React, { PropTypes } from 'react'
 import { Input } from 'antd';
-import { PASSWORD_MASK } from 'src/utils/constant';
 
+import utils from './utils';
+
+const PASSWORD_MASK = utils.PASSWORD_MASK;
 /**
  * 组件属性申明
  * @name 参数名
@@ -38,16 +40,13 @@ export default class UserPassWord extends React.Component {
     constructor(props) {
         super(props);
     }
-    static defaultProps = {
-        userNameField: 'user_name'
-    }
     render() {
         const { name, form, initialValue, disabled, ...other } = this.props;
         return form.getFieldDecorator(name, {
-                    initialValue,
-                    rules: this.generateRules(),
-                    ...other
-                })(
+            initialValue,
+            rules: this.generateRules(),
+            ...other
+        })(
             <Input
                 size="large"
                 name = { name }
@@ -57,7 +56,8 @@ export default class UserPassWord extends React.Component {
                     if (value === PASSWORD_MASK) {
                         form.setFieldsValue({ [name]: ''});
                     }
-                }}/>
+                }}
+            />
         )
     }
     /**

@@ -2,7 +2,9 @@ import React, { PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { Form, TimePicker, Button, Select, InputNumber, message } from 'antd';
 import moment from 'moment';
-import { checkTimeData } from './utils';
+import utils from './utils';
+
+const checkTimeData = utils.checkTimeData;
 
 /**
  * 组件属性申明

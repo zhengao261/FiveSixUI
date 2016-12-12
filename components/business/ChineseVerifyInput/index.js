@@ -9,8 +9,6 @@
 import React, { PropTypes } from 'react';
 import { Input } from 'antd';
 
-import { createOptionsFromObj, createOptionsFormTwoLevel } from 'utils/utils';
-
 /**
  * 组件属性申明
  *
