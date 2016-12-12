@@ -131,7 +131,7 @@ export default class ImageModal extends React.Component {
     render() {
         const { show, width, deg } = this.state;
         const { src, onOpen, onClose } = this.props;
-
+        const srcStr = src || (this.props.children.props ? this.props.children.props.src : '');
         return  (
             <div className="wl-imagemodal-wrapper">
                 <div
@@ -148,7 +148,7 @@ export default class ImageModal extends React.Component {
                         
                         <div style={ { width } }>
                             <img 
-                                src={ src } 
+                                src={ srcStr } 
                                 style={{
                                     width: width,
                                     transform: 'rotate('+deg+'deg)'

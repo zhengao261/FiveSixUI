@@ -5,6 +5,7 @@ import Homepage from './homepage';
 
 import { render } from 'react-dom';
 
+
 render (
     <div>
         <Router history={hashHistory}>
