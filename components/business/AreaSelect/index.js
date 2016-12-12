@@ -3,6 +3,15 @@
  *  - 灵魂级联(怎么实现？)
  *
  */
-export { default as AreaSelect} from './modules/AreaSelect';
-export { default as MultiTeamSelect} from './modules/MultiTeamSelect';
-export { default as SortAreaSelect} from './modules/SortAreaSelect';
+import AreaSelect from './modules/AreaSelect';
+import MultiTeamSelect from './modules/MultiTeamSelect';
+import SortAreaSelect from './modules/SortAreaSelect';
+
+const comp = {
+    SortAreaSelect: SortAreaSelect,
+    MultiTeamSelect: MultiTeamSelect,
+    AreaSelect: AreaSelect
+};
+
+export default comp;
+

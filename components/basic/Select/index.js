@@ -4,7 +4,7 @@
 * @version 0.0.1
 * @todo 更合理的异常捕获
 *       函数提纯
-*       lazy
+*       干掉jquery
 */
 import React, { Component, PropTypes } from 'react';
 import { DropdownMenu, OptGroup, Option, SearchInput, SelectInput, Tips } from './Components';
