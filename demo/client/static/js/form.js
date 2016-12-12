@@ -29,38 +29,40 @@ class TestForm extends Component {
                   />
                             )}
               </FormItem>
-              {getFieldDecorator('areaSelect', {
-                  initialValue: {
-                      team: '',
-                      aoi: [],
-                      partner: []
-                  }
-              })(
-                <AreaSelect.AreaSelect
-                  config={{
-                      team: {
-                          show: true,
-                          showSearch: true
-                      },
-                      city: {
-                          show: false,
-                          multiple: false
-                      },
-                      aoi: {
-                          show: true,
-                          multiple: true,
-                          withAll: true,
-                          showLable: true
-                      },
-                      partner: {
-                          show: true,
-                          showtext: true,
-                          multiple: true,
-                          withAll: true,
-                          showLable: true
-                      }
-                  }}
-                />)}
+              <FormItem>
+                {getFieldDecorator('areaSelect', {
+                    initialValue: {
+                        team: '',
+                        aoi: [],
+                        partner: []
+                    }
+                })(
+                  <AreaSelect.AreaSelect
+                    config={{
+                        team: {
+                            show: true,
+                            showSearch: true
+                        },
+                        city: {
+                            show: false,
+                            multiple: false
+                        },
+                        aoi: {
+                            show: true,
+                            multiple: true,
+                            withAll: true,
+                            showLable: true
+                        },
+                        partner: {
+                            show: true,
+                            showtext: true,
+                            multiple: true,
+                            withAll: true,
+                            showLable: true
+                        }
+                    }}
+                  />)}
+              </FormItem>
               <FormItem>
                 <Button onClick={(event) => this.handleSubmit(event)}>提交</Button>
               </FormItem>
