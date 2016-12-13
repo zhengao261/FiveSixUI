@@ -7,6 +7,7 @@
 import React, {PropTypes} from 'react';
 import {Input} from 'antd';
 import _ from 'lodash';
+import { getFieldDecorator } from '../../_utils/splitFromAntd';
 
 /**
  * 组件属性申明
@@ -88,7 +89,7 @@ export default class BankCardNumberInput extends React.Component {
             'validator'
         ]);
 
-        return form.getFieldDecorator(name, {
+        return getFieldDecorator(form)(name, {
             initialValue,
             rules: this._generateRules()
         })(<Input

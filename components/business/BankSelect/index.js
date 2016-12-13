@@ -10,11 +10,13 @@ import {Select} from 'antd';
 const Option = Select.Option;
 import {BANK_OPTIONS} from './constant';
 import _ from 'lodash'
+import { getFieldDecorator } from '../../_utils/splitFromAntd';
 
 /**
  * 组件属性申明
  * @property {object} form
  * @property {string} name 参数名
+ * @property {string} initialValue set值
  * @property {bool} required 是否必填
  * @property {bool} disabled 是否只读
  * @property {func} getPopupContainer 菜单渲染父节点。默认渲染到 body上
@@ -24,6 +26,7 @@ import _ from 'lodash'
 const propTypes = {
     form: PropTypes.object.isRequired,
     name: PropTypes.string.isRequired,
+    initialValue: PropTypes.string,
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     getPopupContainer: PropTypes.func,
@@ -80,14 +83,15 @@ export default class BankSelect extends React.Component {
     }
 
     render() {
-        const {form, name, disabled} = this.props;
+        const {form, name, disabled, initialValue} = this.props;
         const otherProps = _.omit(this.props, [
             'form',
             'name',
             'required',
             'disabled'
         ]);
-        return form.getFieldDecorator(name, {
+        return getFieldDecorator(form)(name, {
+            initialValue,
             rules: this._generateRules()
         })(
             <Select

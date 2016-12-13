@@ -1,6 +1,9 @@
 import React from 'react';
 import warning from 'warning';
 
+/**
+ * 代替form.getFieldDecorator
+ */
 export const getFieldDecorator = (form) => {
   if (form && form.getFieldDecorator) {
     return (name, config) => form.getFieldDecorator(name, config);
@@ -19,6 +22,9 @@ export const getFieldDecorator = (form) => {
   }
 }
 
+/**
+ * 代替form.getFieldValue
+ */
 export const getFieldValue = (form) => {
   if (form && form.getFieldValue) {
     return (name) => form.getFieldValue(name);
@@ -31,6 +37,9 @@ export const getFieldValue = (form) => {
   }
 }
 
+/**
+ * 代替form.setFieldsValue
+ */
 export const setFieldsValue = (form) => {
   if (form && form.setFieldsValue) {
     return (obj) => form.setFieldsValue(obj);

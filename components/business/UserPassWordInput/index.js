@@ -27,6 +27,7 @@ const PASSWORD_MASK = utils.PASSWORD_MASK;
 const propTypes = {
     name: PropTypes.string.isRequired,
     form: PropTypes.object.isRequired,
+    initialValue: PropTypes.string,
     defaultRules: PropTypes.bool,
     required: PropTypes.bool,
     disabled: PropTypes.bool,

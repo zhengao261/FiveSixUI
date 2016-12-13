@@ -3,7 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { TimeRangePicker, UserPassWordInput, AreaSelect, tools } from 'fivesix';
+import { TimeRangePicker, UserPassWordInput, AreaSelect, BankSelect, tools } from 'fivesix';
 import { Form, Button } from 'antd';
 
 const FormItem = Form.Item;
@@ -36,6 +36,13 @@ class TestForm extends Component {
                     name = 'password'
                     initialValue = { '1234555' }
                     defaultRules = { true }
+                />
+              </FormItem>
+              <FormItem>
+                <BankSelect
+                  form = { this.props.form }
+                  name = 'bank'
+                  initialValue = { '中国建设银行' }
                 />
               </FormItem>
               <FormItem>
