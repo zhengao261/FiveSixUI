@@ -1,6 +1,9 @@
 /**
- * @file 用户密码输入校验组件 表单项-用户登录密码&骑士密码
+ * @file 用户密码输入校验组件 
+ *       特性：明文密码输入控件；
+ *            当input值为******时，点击密码，密码值清空；
  *       modified by zhangcongfeng<zhangcongfeng@iwaimai.baidu.com>
+ *       modified by lichun<lichun@iwaimai.baidu.com> 20161213
  * 
  * @author lichun <lichun@iwaimai.baidu.com>
  * @version 0.0.1
@@ -10,6 +13,7 @@ import React, { PropTypes } from 'react'
 import { Input } from 'antd';
 
 import utils from './utils';
+import { getFieldDecorator, getFieldValue, setFieldsValue } from '../../_utils/splitFromAntd';
 
 const PASSWORD_MASK = utils.PASSWORD_MASK;
 /**
@@ -42,8 +46,9 @@ export default class UserPassWord extends React.Component {
     }
     render() {
         const { name, form, initialValue, disabled, ...other } = this.props;
-        return form.getFieldDecorator(name, {
-            initialValue,
+
+        return getFieldDecorator(form)(name, {
+            initialValue: initialValue ? PASSWORD_MASK : '',
             rules: this.generateRules(),
             ...other
         })(
@@ -52,9 +57,9 @@ export default class UserPassWord extends React.Component {
                 name = { name }
                 disabled = { disabled }
                 onFocus = {(e) => {
-                    let value = form.getFieldValue(name);
+                    let value = getFieldValue(form)(name);
                     if (value === PASSWORD_MASK) {
-                        form.setFieldsValue({ [name]: ''});
+                        setFieldsValue(form)({ [name]: ''});
                     }
                 }}
             />
@@ -90,7 +95,7 @@ export default class UserPassWord extends React.Component {
             callback('密码长度6-32位，且只包含数字字母及_!@#$%^&*().');
         } else if (value && !/([a-zA-Z]+.*[0-9]+)|([0-9]+.*[a-zA-Z]+)/.test(value)) {
             callback('密码需同时包含数字和字母');
-        } else if (value && userNameField && value.indexOf(form.getFieldValue(userNameField)) > -1) {
+        } else if (value && userNameField && value.indexOf(getFieldValue(form)(userNameField)) > -1) {
             callback('密码中不能包含用户名');
         } else {
             callback();
