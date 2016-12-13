@@ -1,6 +1,7 @@
 import React, { Component, PropTypes} from 'react';
 import { Crumb, ImageModal, SearchPeriod, Show, TimeRangePicker } from 'fivesix';
 import { Button } from 'antd';
+import moment from 'moment';
 
 export default class Homepage extends Component { 
     render() {
@@ -9,13 +10,13 @@ export default class Homepage extends Component {
                 <Crumb
                     data = {[{title: '骑士管理', link: 'www.baidu.com'},{title: '装备管理'}]}
                 />
-                <ImageModal 
-                    src = 'http://yizhan.baidu.com/static/logisticsfrontend/images/sound_d165ad8.png'
-                >
+                <ImageModal>
                     <img src="http://yizhan.baidu.com/static/logisticsfrontend/images/sound_d165ad8.png" />
                 </ImageModal>
                 <ImageModal 
-                    src = 'http://yizhan.baidu.com/static/logisticsfrontend/images/download_195f873.png'
+                    src='http://yizhan.baidu.com/static/logisticsfrontend/images/sound_d165ad8.png' 
+                    onOpen = {()=> {console.log('222');}}
+
                 >
                     点我点我
                 </ImageModal>
