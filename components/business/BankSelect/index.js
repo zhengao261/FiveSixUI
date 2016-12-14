@@ -4,34 +4,21 @@
  * @author lichun <lichun@iwaimai.baidu.com>
  * @version 0.0.1
  */
-
 import React, {PropTypes} from 'react';
 import {Select} from 'antd';
-const Option = Select.Option;
 import {BANK_OPTIONS} from './constant';
 import _ from 'lodash'
-import { getFieldDecorator } from '../../_utils/splitFromAntd';
 
 /**
  * 组件属性申明
- * @property {object} form
- * @property {string} name 参数名
- * @property {string} initialValue set值
- * @property {bool} required 是否必填
- * @property {bool} disabled 是否只读
- * @property {func} getPopupContainer 菜单渲染父节点。默认渲染到 body上
- * @property {string} initialValue 初始值
+ * @property {string} value
+ * @property {function} onChange 
  */
-
 const propTypes = {
-    form: PropTypes.object.isRequired,
-    name: PropTypes.string.isRequired,
-    initialValue: PropTypes.string,
-    required: PropTypes.bool,
-    disabled: PropTypes.bool,
-    getPopupContainer: PropTypes.func,
-    isSelectAllOptions: PropTypes.bool
+    value: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired
 };
+const Option = Select.Option;
 
 /**
  * 表单项--银行
@@ -58,21 +45,6 @@ export default class BankSelect extends React.Component {
         return options;
     }
 
-    /**
-     * 默认验证规则 pure
-     *
-     * @param {array} arr
-     * @return {array} option
-     */
-    _generateRules() {
-        const {required} = this.props;
-        let rules = [];
-        if (required) {
-            rules.push({required: true, message: '请选择银行'})
-        }
-        return rules;
-    }
-
     _getOptions () {
         const {isSelectAllOptions} = this.props;
         let options = this._createOptionsFromArray(BANK_OPTIONS);
@@ -83,22 +55,12 @@ export default class BankSelect extends React.Component {
     }
 
     render() {
-        const {form, name, disabled, initialValue} = this.props;
-        const otherProps = _.omit(this.props, [
-            'form',
-            'name',
-            'required',
-            'disabled'
-        ]);
-        return getFieldDecorator(form)(name, {
-            initialValue,
-            rules: this._generateRules()
-        })(
+        return (
             <Select
-                disabled={disabled}
-                {...otherProps}
+                { ...this.props }
             >
                 {this._getOptions()}
-            </Select>);
+            </Select>
+        )
     }
 }
