@@ -3,8 +3,9 @@
  */
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
-import { TimeRangePicker, UserPassWordInput, AreaSelect, BankSelect, tools } from 'fivesix';
-import { Form, Button } from 'antd';
+import { TimeRangePicker, UserPassWordInput, BankSelect, verify } from 'fivesix';
+
+import { Form, Button, Input } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -12,7 +13,7 @@ class TestForm extends Component {
     handleSubmit() {
         let result = this.props.form.getFieldsValue();
         console.log(result);
-        console.log(tools.formfieldsValidte(this.props.form, (msg) => console.log(msg)));
+        console.log(verify.formfieldsValidate(this.props.form, (msg) => console.log(msg)));
     }
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -31,19 +32,18 @@ class TestForm extends Component {
                             )}
               </FormItem>
               <FormItem>
-                <UserPassWordInput 
-                    form = { this.props.form }
-                    name = 'password'
-                    initialValue = { '1234555' }
-                    defaultRules = { true }
-                />
+                {getFieldDecorator('password', {
+                  rules : verify.setRules(['REQUIRED', 'USER_NAME'])
+                })(
+                  <Input />
+                )}
               </FormItem>
               <FormItem>
-                <BankSelect
-                  form = { this.props.form }
-                  name = 'bank'
-                  initialValue = { '中国建设银行' }
-                />
+                {getFieldDecorator('bank', {
+                  rules : verify.setRules(['REQUIRED'])
+                })(
+                  <BankSelect />
+                )}
               </FormItem>
               <FormItem>
                 <Button onClick={(event) => this.handleSubmit(event)}>提交</Button>
